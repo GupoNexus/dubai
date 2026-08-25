@@ -19,7 +19,7 @@ export function Footer() {
             <img
               src="/brand/logo.jpg"
               alt={brandConfig.name}
-              className="h-20 sm:h-24 w-auto object-contain brightness-0 invert"
+              className="h-16 sm:h-20 md:h-24 w-auto object-contain"
             />
             <p className="text-sm text-primary-foreground/70 max-w-sm leading-relaxed">
               Especializada em cama, mesa, banho, decoração e artigos para casa. Transformando seu
