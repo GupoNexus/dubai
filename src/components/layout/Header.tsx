@@ -1,6 +1,6 @@
 import { brandConfig } from "@/data/brandConfig";
 import { Search, User, Heart, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useCart } from "@/context/CartContext";
 import { PRODUCTS, type ProductCategory } from "@/data/products";
@@ -18,26 +18,42 @@ const NAV_ITEMS: { label: string; to: string; categoria?: ProductCategory }[] = 
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { count } = useCart();
+
+  // Sticky header: shrink discreetly on scroll, keep nav/search/cart always accessible
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <header className="w-full bg-white border-b border-border sticky top-0 z-50">
-      {/* Top Bar */}
-      <div className="bg-primary text-primary-foreground py-2 text-center text-[10px] sm:text-xs font-semibold uppercase tracking-widest px-4">
+      {/* Top Bar — discreetly collapses on scroll to save space */}
+      <div
+        className={`bg-primary text-primary-foreground text-center text-[10px] sm:text-xs font-semibold uppercase tracking-widest px-4 overflow-hidden transition-all duration-300 ${
+          isScrolled ? "max-h-0 py-0 opacity-0" : "max-h-10 py-2 opacity-100"
+        }`}
+      >
         COMPRE ONLINE | RETIRE NA LOJA | ENTREGA | ATENDIMENTO PELO WHATSAPP
       </div>
 
       {/* Main Header */}
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
-        <button className="lg:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          {isMenuOpen ? <X /> : <Menu />}
-        </button>
-
+      <div
+        className={`container mx-auto px-4 flex items-center justify-between gap-3 transition-all duration-300 ${
+          isScrolled ? "py-2" : "py-4"
+        }`}
+      >
         <Link to="/" className="flex-shrink-0">
           <img
             src="/brand/logo.jpg"
             alt={brandConfig.name}
-            className="h-16 sm:h-20 md:h-24 w-auto object-contain"
+            className={`w-auto object-contain transition-all duration-300 ${
+              isScrolled ? "h-10 sm:h-12 md:h-14" : "h-16 sm:h-20 md:h-24"
+            }`}
           />
         </Link>
 
@@ -50,7 +66,16 @@ export function Header() {
           <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-1 sm:gap-2 lg:gap-4">
+          {/* Mobile: search toggle */}
+          <button
+            className="lg:hidden p-2 text-primary hover:bg-secondary/50 rounded-full transition-colors"
+            onClick={() => setIsMobileSearchOpen((v) => !v)}
+            aria-label="Buscar"
+          >
+            <Search className="w-5 h-5" />
+          </button>
+
           <button className="p-2 text-primary hover:bg-secondary/50 rounded-full transition-colors hidden sm:block">
             <User className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
@@ -66,12 +91,29 @@ export function Header() {
               {count}
             </span>
           </Link>
+
+          {/* Mobile: menu toggle */}
+          <button
+            className="lg:hidden p-2 text-primary"
+            onClick={() => setIsMenuOpen((v) => !v)}
+            aria-label="Menu"
+          >
+            {isMenuOpen ? <X /> : <Menu />}
+          </button>
         </div>
       </div>
 
-      {/* Categories Menu */}
-      <nav className="hidden lg:block border-t border-border/50">
-        <ul className="container mx-auto flex justify-center items-center gap-8 py-3 text-[11px] font-bold uppercase tracking-wider text-primary">
+      {/* Categories Menu (desktop) */}
+      <nav
+        className={`hidden lg:block border-t border-border/50 transition-all duration-300 ${
+          isScrolled ? "py-0" : ""
+        }`}
+      >
+        <ul
+          className={`container mx-auto flex justify-center items-center gap-8 text-[11px] font-bold uppercase tracking-wider text-primary transition-all duration-300 ${
+            isScrolled ? "py-1.5" : "py-3"
+          }`}
+        >
           {NAV_ITEMS.map((item) => {
             const categoryProducts = item.categoria
               ? PRODUCTS.filter((p) => p.category === item.categoria)
@@ -142,17 +184,20 @@ export function Header() {
         </ul>
       </nav>
 
-      {/* Mobile Search - Visible only on mobile */}
-      <div className="lg:hidden px-4 pb-4">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="O que você está procurando?"
-            className="w-full bg-secondary/50 border-none rounded-full py-2 px-6 pr-12 text-sm"
-          />
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+      {/* Mobile Search — toggled by the search icon, keeps the header compact by default */}
+      {isMobileSearchOpen && (
+        <div className="lg:hidden px-4 pb-4">
+          <div className="relative">
+            <input
+              type="text"
+              autoFocus
+              placeholder="O que você está procurando?"
+              className="w-full bg-secondary/50 border-none rounded-full py-2 px-6 pr-12 text-sm"
+            />
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Mobile Menu */}
       {isMenuOpen && (
