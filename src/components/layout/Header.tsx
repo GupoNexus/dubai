@@ -1,10 +1,11 @@
 import { brandConfig } from "@/data/brandConfig";
-import { Search, User, Heart, ShoppingCart, Menu, X } from "lucide-react";
+import { Search, User, Heart, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useCart } from "@/context/CartContext";
+import { PRODUCTS, type ProductCategory } from "@/data/products";
 
-const NAV_ITEMS: { label: string; to: string; categoria?: string }[] = [
+const NAV_ITEMS: { label: string; to: string; categoria?: ProductCategory }[] = [
   { label: "Início", to: "/" },
   { label: "Cama", to: "/catalogo", categoria: "Cama" },
   { label: "Banho", to: "/catalogo", categoria: "Banho" },
@@ -71,17 +72,73 @@ export function Header() {
       {/* Categories Menu */}
       <nav className="hidden lg:block border-t border-border/50">
         <ul className="container mx-auto flex justify-center items-center gap-8 py-3 text-[11px] font-bold uppercase tracking-wider text-primary">
-          {NAV_ITEMS.map((item) => (
-            <li key={item.label}>
-              <Link
-                to={item.to}
-                search={item.categoria ? { categoria: item.categoria } : undefined}
-                className="hover:text-primary/70 transition-colors border-b-2 border-transparent hover:border-primary/20 pb-1"
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const categoryProducts = item.categoria
+              ? PRODUCTS.filter((p) => p.category === item.categoria)
+              : [];
+            const featured = categoryProducts[0];
+
+            return (
+              <li key={item.label} className="relative group">
+                <Link
+                  to={item.to}
+                  search={item.categoria ? { categoria: item.categoria } : undefined}
+                  className="flex items-center gap-1 hover:text-primary/70 transition-colors border-b-2 border-transparent group-hover:border-primary/20 pb-1"
+                >
+                  {item.label}
+                  {featured && <ChevronDown className="w-3 h-3 opacity-50" />}
+                </Link>
+
+                {featured && (
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
+                    <div className="bg-white rounded-2xl shadow-2xl border border-border p-6 grid grid-cols-[minmax(180px,220px)_200px] gap-6 w-max max-w-[90vw]">
+                      <div className="space-y-1">
+                        <p className="text-[10px] text-muted-foreground normal-case tracking-normal font-semibold mb-2">
+                          Subcategorias
+                        </p>
+                        {categoryProducts.map((product) => (
+                          <Link
+                            key={product.slug}
+                            to="/catalogo"
+                            search={{ categoria: item.categoria! }}
+                            className="flex items-center gap-3 py-1.5 px-2 rounded-lg hover:bg-secondary/40 transition-colors normal-case tracking-normal font-medium text-xs text-foreground"
+                          >
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="w-9 h-9 rounded-md object-cover shrink-0"
+                            />
+                            <span className="line-clamp-2">{product.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+
+                      <Link
+                        to="/catalogo"
+                        search={{ categoria: item.categoria! }}
+                        className="relative rounded-xl overflow-hidden group/img block h-full min-h-[180px]"
+                      >
+                        <img
+                          src={featured.image}
+                          alt={featured.name}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-white/80 mb-1">
+                            Destaque
+                          </p>
+                          <p className="text-sm font-bold leading-tight normal-case tracking-normal">
+                            {item.label}
+                          </p>
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </nav>
 

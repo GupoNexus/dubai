@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { Star, Heart, ShoppingCart, Check } from "lucide-react";
+import { Star, Heart, ShoppingCart, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { formatCurrency } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
@@ -33,6 +33,9 @@ export function ProductCard({ product }: { product: Product }) {
     (index: number) => emblaApi && emblaApi.scrollTo(index),
     [emblaApi],
   );
+
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
 
   const handleAddToCart = () => {
     addItem(product);
@@ -72,6 +75,27 @@ export function ProductCard({ product }: { product: Product }) {
           <div className="absolute top-4 left-4 bg-primary text-white px-3 py-1 text-[10px] font-bold rounded-full z-10">
             -{Math.round((1 - product.price / product.oldPrice) * 100)}%
           </div>
+        )}
+
+        {product.images.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={scrollPrev}
+              aria-label="Foto anterior"
+              className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-primary opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white shadow-md"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={scrollNext}
+              aria-label="Próxima foto"
+              className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-primary opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white shadow-md"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </>
         )}
 
         {product.images.length > 1 && (
