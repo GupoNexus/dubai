@@ -3,15 +3,16 @@ import { Search, User, Heart, ShoppingCart, Menu, X, ChevronDown } from "lucide-
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useCart } from "@/context/CartContext";
-import { PRODUCTS, type ProductCategory } from "@/data/products";
+import { PRODUCTS, isOffer, getSubcategories, type ProductCategory } from "@/data/products";
 
-const NAV_ITEMS: { label: string; to: string; categoria?: ProductCategory }[] = [
+const NAV_ITEMS: { label: string; to: string; categoria?: ProductCategory; oferta?: boolean }[] = [
   { label: "Início", to: "/" },
   { label: "Cama", to: "/catalogo", categoria: "Cama" },
   { label: "Banho", to: "/catalogo", categoria: "Banho" },
   { label: "Mesa", to: "/catalogo", categoria: "Mesa" },
   { label: "Decoração", to: "/catalogo", categoria: "Decoração" },
   { label: "Aromas", to: "/catalogo", categoria: "Aromas" },
+  { label: "Ofertas", to: "/catalogo", oferta: true },
   { label: "Catálogo Completo", to: "/catalogo" },
   { label: "Nossas Lojas", to: "/links" },
 ];
@@ -119,12 +120,19 @@ export function Header() {
               ? PRODUCTS.filter((p) => p.category === item.categoria)
               : [];
             const featured = categoryProducts[0];
+            const subcategories = item.categoria ? getSubcategories(item.categoria) : [];
+            const categoryHasOffers = categoryProducts.some(isOffer);
+            const linkSearch = item.categoria
+              ? { categoria: item.categoria }
+              : item.oferta
+                ? { oferta: "1" }
+                : undefined;
 
             return (
               <li key={item.label} className="relative group">
                 <Link
                   to={item.to}
-                  search={item.categoria ? { categoria: item.categoria } : undefined}
+                  search={linkSearch}
                   className="flex items-center gap-1 hover:text-primary/70 transition-colors border-b-2 border-transparent group-hover:border-primary/20 pb-1"
                 >
                   {item.label}
@@ -133,48 +141,73 @@ export function Header() {
 
                 {featured && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
-                    <div className="bg-white rounded-2xl shadow-2xl border border-border p-6 grid grid-cols-[minmax(180px,220px)_200px] gap-6 w-max max-w-[90vw]">
-                      <div className="space-y-1">
-                        <p className="text-[10px] text-muted-foreground normal-case tracking-normal font-semibold mb-2">
-                          Subcategorias
-                        </p>
-                        {categoryProducts.map((product) => (
-                          <Link
-                            key={product.slug}
-                            to="/catalogo"
-                            search={{ categoria: item.categoria! }}
-                            className="flex items-center gap-3 py-1.5 px-2 rounded-lg hover:bg-secondary/40 transition-colors normal-case tracking-normal font-medium text-xs text-foreground"
-                          >
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              className="w-9 h-9 rounded-md object-cover shrink-0"
-                            />
-                            <span className="line-clamp-2">{product.name}</span>
-                          </Link>
+                    <div className="bg-white rounded-2xl shadow-2xl border border-border p-6 grid grid-cols-[minmax(220px,260px)_200px] gap-6 w-max max-w-[90vw]">
+                      <div className="space-y-4 max-h-[340px] overflow-y-auto pr-1">
+                        {subcategories.map((sub) => (
+                          <div key={sub}>
+                            <p className="text-[10px] text-muted-foreground normal-case tracking-normal font-semibold mb-1.5">
+                              {sub}
+                            </p>
+                            <div className="space-y-0.5">
+                              {categoryProducts
+                                .filter((p) => p.subcategory === sub)
+                                .map((product) => (
+                                  <Link
+                                    key={product.slug}
+                                    to="/catalogo"
+                                    search={{ categoria: item.categoria!, subcategoria: sub }}
+                                    className="flex items-center gap-3 py-1.5 px-2 rounded-lg hover:bg-secondary/40 transition-colors normal-case tracking-normal font-medium text-xs text-foreground"
+                                  >
+                                    <img
+                                      src={product.image}
+                                      alt={product.name}
+                                      className="w-9 h-9 rounded-md object-cover shrink-0"
+                                    />
+                                    <span className="flex-1 line-clamp-2">{product.name}</span>
+                                    {product.sizes && (
+                                      <span className="text-[9px] text-primary/60 font-semibold shrink-0">
+                                        {product.sizes.length} tam.
+                                      </span>
+                                    )}
+                                  </Link>
+                                ))}
+                            </div>
+                          </div>
                         ))}
                       </div>
 
-                      <Link
-                        to="/catalogo"
-                        search={{ categoria: item.categoria! }}
-                        className="relative rounded-xl overflow-hidden group/img block h-full min-h-[180px]"
-                      >
-                        <img
-                          src={featured.image}
-                          alt={featured.name}
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-white/80 mb-1">
-                            Destaque
-                          </p>
-                          <p className="text-sm font-bold leading-tight normal-case tracking-normal">
-                            {item.label}
-                          </p>
-                        </div>
-                      </Link>
+                      <div className="flex flex-col gap-3">
+                        <Link
+                          to="/catalogo"
+                          search={{ categoria: item.categoria! }}
+                          className="relative rounded-xl overflow-hidden group/img block flex-1 min-h-[140px]"
+                        >
+                          <img
+                            src={featured.image}
+                            alt={featured.name}
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                          <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-white/80 mb-1">
+                              Destaque
+                            </p>
+                            <p className="text-sm font-bold leading-tight normal-case tracking-normal">
+                              {item.label}
+                            </p>
+                          </div>
+                        </Link>
+
+                        {categoryHasOffers && (
+                          <Link
+                            to="/catalogo"
+                            search={{ categoria: item.categoria!, oferta: "1" }}
+                            className="text-center bg-secondary text-primary py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors"
+                          >
+                            Ver ofertas
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -207,7 +240,13 @@ export function Header() {
               <li key={item.label}>
                 <Link
                   to={item.to}
-                  search={item.categoria ? { categoria: item.categoria } : undefined}
+                  search={
+                    item.categoria
+                      ? { categoria: item.categoria }
+                      : item.oferta
+                        ? { oferta: "1" }
+                        : undefined
+                  }
                   onClick={() => setIsMenuOpen(false)}
                   className="block px-6 py-3 hover:bg-secondary/40 transition-colors"
                 >
