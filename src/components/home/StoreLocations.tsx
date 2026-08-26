@@ -62,12 +62,27 @@ export function StoreLocations() {
           ))}
         </div>
 
-        <div className="mt-20 bg-white rounded-3xl p-8 shadow-inner border border-border min-h-[400px] flex items-center justify-center">
-             <div className="text-center space-y-4">
-                 <MapPin className="w-12 h-12 text-primary mx-auto opacity-20" />
-                 <h3 className="text-xl font-bold text-primary/40 uppercase tracking-widest">Encontre a Dubai mais próxima</h3>
-                 <p className="text-muted-foreground text-sm">Integração com Google Maps em breve</p>
-             </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto mt-12">
+          {brandConfig.stores.map((store) => (
+            <div
+              key={store.name}
+              className="relative rounded-3xl overflow-hidden shadow-xl border border-border h-[350px] bg-white"
+            >
+              <iframe
+                title={`Mapa — Dubai Enxovais ${store.name}`}
+                src={`https://maps.google.com/maps?cid=${store.cid}&output=embed`}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="absolute inset-0 w-full h-full"
+              />
+              <span className="absolute bottom-4 left-4 z-10 bg-primary text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full shadow-lg pointer-events-none">
+                Loja {store.name}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </section>
