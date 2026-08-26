@@ -22,6 +22,11 @@ function gallery(slug: string, count: number): string[] {
   );
 }
 
+/** Same as gallery(), but lets you control which photo comes first (and the order of the rest). */
+function galleryOrdered(slug: string, order: number[]): string[] {
+  return order.map((n) => `/products/${slug}/${String(n).padStart(2, "0")}.jpg`);
+}
+
 export const PRODUCTS: Product[] = [
   {
     id: 1,
@@ -32,8 +37,8 @@ export const PRODUCTS: Product[] = [
     price: 459.9,
     oldPrice: 599.9,
     rating: 5,
-    images: gallery("kit-cama-medara", 5),
-    image: gallery("kit-cama-medara", 5)[0],
+    images: galleryOrdered("kit-cama-medara", [3, 1, 2, 4, 5]),
+    image: galleryOrdered("kit-cama-medara", [3, 1, 2, 4, 5])[0],
   },
   {
     id: 2,
@@ -44,8 +49,8 @@ export const PRODUCTS: Product[] = [
     price: 479.9,
     oldPrice: 619.9,
     rating: 5,
-    images: gallery("kit-cama-mary-roses", 2),
-    image: gallery("kit-cama-mary-roses", 2)[0],
+    images: galleryOrdered("kit-cama-mary-roses", [2, 1]),
+    image: galleryOrdered("kit-cama-mary-roses", [2, 1])[0],
   },
   {
     id: 3,
@@ -56,8 +61,8 @@ export const PRODUCTS: Product[] = [
     price: 329.9,
     oldPrice: 419.9,
     rating: 5,
-    images: gallery("kit-cama-oslo", 2),
-    image: gallery("kit-cama-oslo", 2)[0],
+    images: galleryOrdered("kit-cama-oslo", [2, 1]),
+    image: galleryOrdered("kit-cama-oslo", [2, 1])[0],
   },
   {
     id: 4,
@@ -68,8 +73,8 @@ export const PRODUCTS: Product[] = [
     price: 419.9,
     oldPrice: 649.9,
     rating: 5,
-    images: gallery("kit-cama-versalhes", 4),
-    image: gallery("kit-cama-versalhes", 4)[0],
+    images: galleryOrdered("kit-cama-versalhes", [4, 1, 2, 3]),
+    image: galleryOrdered("kit-cama-versalhes", [4, 1, 2, 3])[0],
   },
   {
     id: 5,
@@ -80,8 +85,8 @@ export const PRODUCTS: Product[] = [
     price: 499.9,
     oldPrice: 649.9,
     rating: 5,
-    images: gallery("kit-cama-satin-montrelle-tresor", 5),
-    image: gallery("kit-cama-satin-montrelle-tresor", 5)[0],
+    images: galleryOrdered("kit-cama-satin-montrelle-tresor", [4, 1, 2, 3, 5]),
+    image: galleryOrdered("kit-cama-satin-montrelle-tresor", [4, 1, 2, 3, 5])[0],
   },
   {
     id: 6,
@@ -92,8 +97,8 @@ export const PRODUCTS: Product[] = [
     price: 459.9,
     oldPrice: 599.9,
     rating: 5,
-    images: gallery("kit-cama-brenna", 6),
-    image: gallery("kit-cama-brenna", 6)[0],
+    images: galleryOrdered("kit-cama-brenna", [3, 1, 2, 4, 5, 6]),
+    image: galleryOrdered("kit-cama-brenna", [3, 1, 2, 4, 5, 6])[0],
   },
   {
     id: 7,
@@ -105,8 +110,8 @@ export const PRODUCTS: Product[] = [
     price: 349.9,
     oldPrice: 439.9,
     rating: 5,
-    images: gallery("percal-200-fios", 4),
-    image: gallery("percal-200-fios", 4)[0],
+    images: galleryOrdered("percal-200-fios", [2, 1, 3, 4]),
+    image: galleryOrdered("percal-200-fios", [2, 1, 3, 4])[0],
   },
   {
     id: 8,
@@ -155,8 +160,8 @@ export const PRODUCTS: Product[] = [
     price: 349.9,
     oldPrice: 449.9,
     rating: 5,
-    images: gallery("mesa-posta", 10),
-    image: gallery("mesa-posta", 10)[0],
+    images: galleryOrdered("mesa-posta", [2, 1, 3, 4, 5, 6, 7, 8, 9, 10]),
+    image: galleryOrdered("mesa-posta", [2, 1, 3, 4, 5, 6, 7, 8, 9, 10])[0],
   },
   {
     id: 12,
@@ -168,8 +173,8 @@ export const PRODUCTS: Product[] = [
     price: 599.9,
     oldPrice: 799.9,
     rating: 5,
-    images: gallery("tapetes-cortinas", 7),
-    image: gallery("tapetes-cortinas", 7)[0],
+    images: galleryOrdered("tapetes-cortinas", [6, 1, 2, 3, 4, 5, 7]),
+    image: galleryOrdered("tapetes-cortinas", [6, 1, 2, 3, 4, 5, 7])[0],
   },
   {
     id: 13,
