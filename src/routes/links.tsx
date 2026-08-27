@@ -61,7 +61,9 @@ function LinksPage() {
             </a>
 
             <a 
-                href="#"
+                href="https://www.instagram.com/dubaienxovaisoficial/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center justify-between w-full bg-white p-6 rounded-2xl border border-border hover:border-primary/40 hover:shadow-xl transition-all group"
             >
                 <div className="flex items-center gap-4">

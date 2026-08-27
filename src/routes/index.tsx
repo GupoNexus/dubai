@@ -7,6 +7,10 @@ import { FeaturedProducts } from "@/components/home/FeaturedProducts";
 import { WhyDubai } from "@/components/home/WhyDubai";
 import { CustomerReviews } from "@/components/home/CustomerReviews";
 import { StoreLocations } from "@/components/home/StoreLocations";
+import { ShopBySize } from "@/components/home/ShopBySize";
+import { Offers } from "@/components/home/Offers";
+import { FirstVisitCapture } from "@/components/home/FirstVisitCapture";
+import { DubaiGuide } from "@/components/home/DubaiGuide";
 import { Header } from "@/components/layout/Header";
 import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { Footer } from "@/components/layout/Footer";
@@ -32,11 +36,15 @@ function Index() {
         <HeroBanner />
         <Benefits />
         <Categories />
+        <ShopBySize />
         <FeaturedProducts />
+        <Offers />
         <WhyDubai />
+        <DubaiGuide />
         <CustomerReviews />
         <StoreLocations />
         <FloatingWhatsApp />
+        <FirstVisitCapture />
       </main>
       <Footer />
     </div>

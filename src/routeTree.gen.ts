@@ -14,6 +14,10 @@ import { Route as CarrinhoRouteImport } from './routes/carrinho'
 import { Route as CatalogoRouteImport } from './routes/catalogo'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as LinksRouteImport } from './routes/links'
+import { Route as PoliticasRouteImport } from './routes/politicas'
+import { Route as GuiaIndexRouteImport } from './routes/guia.index'
+import { Route as GuiaSlugRouteImport } from './routes/guia.$slug'
+import { Route as ProdutoSlugRouteImport } from './routes/produto.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +44,26 @@ const LinksRoute = LinksRouteImport.update({
   path: '/links',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PoliticasRoute = PoliticasRouteImport.update({
+  id: '/politicas',
+  path: '/politicas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuiaIndexRoute = GuiaIndexRouteImport.update({
+  id: '/guia/',
+  path: '/guia/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuiaSlugRoute = GuiaSlugRouteImport.update({
+  id: '/guia/$slug',
+  path: '/guia/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProdutoSlugRoute = ProdutoSlugRouteImport.update({
+  id: '/produto/$slug',
+  path: '/produto/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +71,10 @@ export interface FileRoutesByFullPath {
   '/catalogo': typeof CatalogoRoute
   '/checkout': typeof CheckoutRoute
   '/links': typeof LinksRoute
+  '/politicas': typeof PoliticasRoute
+  '/guia/$slug': typeof GuiaSlugRoute
+  '/produto/$slug': typeof ProdutoSlugRoute
+  '/guia/': typeof GuiaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +82,10 @@ export interface FileRoutesByTo {
   '/catalogo': typeof CatalogoRoute
   '/checkout': typeof CheckoutRoute
   '/links': typeof LinksRoute
+  '/politicas': typeof PoliticasRoute
+  '/guia/$slug': typeof GuiaSlugRoute
+  '/produto/$slug': typeof ProdutoSlugRoute
+  '/guia': typeof GuiaIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +94,45 @@ export interface FileRoutesById {
   '/catalogo': typeof CatalogoRoute
   '/checkout': typeof CheckoutRoute
   '/links': typeof LinksRoute
+  '/politicas': typeof PoliticasRoute
+  '/guia/$slug': typeof GuiaSlugRoute
+  '/produto/$slug': typeof ProdutoSlugRoute
+  '/guia/': typeof GuiaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/carrinho' | '/catalogo' | '/checkout' | '/links'
+  fullPaths:
+    | '/'
+    | '/carrinho'
+    | '/catalogo'
+    | '/checkout'
+    | '/links'
+    | '/politicas'
+    | '/guia/$slug'
+    | '/produto/$slug'
+    | '/guia/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/carrinho' | '/catalogo' | '/checkout' | '/links'
-  id: '__root__' | '/' | '/carrinho' | '/catalogo' | '/checkout' | '/links'
+  to:
+    | '/'
+    | '/carrinho'
+    | '/catalogo'
+    | '/checkout'
+    | '/links'
+    | '/politicas'
+    | '/guia/$slug'
+    | '/produto/$slug'
+    | '/guia'
+  id:
+    | '__root__'
+    | '/'
+    | '/carrinho'
+    | '/catalogo'
+    | '/checkout'
+    | '/links'
+    | '/politicas'
+    | '/guia/$slug'
+    | '/produto/$slug'
+    | '/guia/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +141,10 @@ export interface RootRouteChildren {
   CatalogoRoute: typeof CatalogoRoute
   CheckoutRoute: typeof CheckoutRoute
   LinksRoute: typeof LinksRoute
+  PoliticasRoute: typeof PoliticasRoute
+  GuiaSlugRoute: typeof GuiaSlugRoute
+  ProdutoSlugRoute: typeof ProdutoSlugRoute
+  GuiaIndexRoute: typeof GuiaIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +184,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LinksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/politicas': {
+      id: '/politicas'
+      path: '/politicas'
+      fullPath: '/politicas'
+      preLoaderRoute: typeof PoliticasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guia/': {
+      id: '/guia/'
+      path: '/guia'
+      fullPath: '/guia/'
+      preLoaderRoute: typeof GuiaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guia/$slug': {
+      id: '/guia/$slug'
+      path: '/guia/$slug'
+      fullPath: '/guia/$slug'
+      preLoaderRoute: typeof GuiaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/produto/$slug': {
+      id: '/produto/$slug'
+      path: '/produto/$slug'
+      fullPath: '/produto/$slug'
+      preLoaderRoute: typeof ProdutoSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +221,10 @@ const rootRouteChildren: RootRouteChildren = {
   CatalogoRoute: CatalogoRoute,
   CheckoutRoute: CheckoutRoute,
   LinksRoute: LinksRoute,
+  PoliticasRoute: PoliticasRoute,
+  GuiaSlugRoute: GuiaSlugRoute,
+  ProdutoSlugRoute: ProdutoSlugRoute,
+  GuiaIndexRoute: GuiaIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

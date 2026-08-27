@@ -1,6 +1,6 @@
-# Tiny Tales
+# Dubai Enxovais
 
-oi
+E-commerce e catálogo digital da Dubai Enxovais, com produtos, carrinho, checkout assistido, WhatsApp, lojas físicas e Guia Dubai.
 
 This project was built with [Lovable](https://lovable.dev).
 

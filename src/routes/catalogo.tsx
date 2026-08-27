@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
@@ -17,6 +17,9 @@ const searchSchema = z.object({
   categoria: z.string().optional(),
   subcategoria: z.string().optional(),
   oferta: z.string().optional(),
+  tamanho: z.string().optional(),
+  q: z.string().optional(),
+  ordem: z.enum(["relevancia", "recentes", "menor", "maior"]).optional(),
 });
 
 export const Route = createFileRoute("/catalogo")({
@@ -44,13 +47,14 @@ export const Route = createFileRoute("/catalogo")({
 const FILTERS: ("Todos" | ProductCategory)[] = ["Todos", ...PRODUCT_CATEGORIES];
 
 function CatalogoPage() {
-  const { categoria, subcategoria, oferta } = Route.useSearch();
+  const { categoria, subcategoria, oferta, tamanho, q, ordem } = Route.useSearch();
   const navigate = Route.useNavigate();
   const [active, setActive] = useState<"Todos" | ProductCategory>(
     (FILTERS.find((f) => f === categoria) as "Todos" | ProductCategory) || "Todos",
   );
   const [activeSub, setActiveSub] = useState<string | null>(subcategoria ?? null);
   const showOffers = oferta === "1";
+  const [visible, setVisible] = useState(8);
 
   // Keep local state in sync if the category changes via an external link (mega menu, etc.)
   useEffect(() => {
@@ -63,6 +67,13 @@ function CatalogoPage() {
   let filtered = active === "Todos" ? PRODUCTS : PRODUCTS.filter((p) => p.category === active);
   if (activeSub) filtered = filtered.filter((p) => p.subcategory === activeSub);
   if (showOffers) filtered = filtered.filter(isOffer);
+  if (tamanho) filtered = filtered.filter((p) => p.sizes?.includes(tamanho));
+  if (q) { const needle = q.toLocaleLowerCase("pt-BR"); filtered = filtered.filter((p) => [p.name, p.category, p.subcategory, p.description, ...(p.sizes ?? [])].join(" ").toLocaleLowerCase("pt-BR").includes(needle)); }
+  if (ordem === "menor") filtered = [...filtered].sort((a, b) => a.price - b.price);
+  if (ordem === "maior") filtered = [...filtered].sort((a, b) => b.price - a.price);
+  if (ordem === "recentes") filtered = [...filtered].sort((a, b) => b.id - a.id);
+  const sizes = useMemo(() => Array.from(new Set(PRODUCTS.filter((p) => p.category === "Cama").flatMap((p) => p.sizes ?? []))), []);
+  useEffect(() => setVisible(8), [active, activeSub, showOffers, tamanho, q, ordem]);
 
   const handleFilter = (cat: "Todos" | ProductCategory) => {
     setActive(cat);
@@ -146,11 +157,17 @@ function CatalogoPage() {
           )}
           {showOffers && <div className="mb-10" />}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
-            {filtered.map((product) => (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-y border-border py-4">
+            <div className="flex flex-wrap items-center gap-2">{active === "Cama" && sizes.map((size) => <button key={size} onClick={() => navigate({ search: { categoria: "Cama", ...(size === tamanho ? {} : { tamanho: size }) } })} className={`px-3 py-1.5 rounded-full border text-[11px] font-semibold ${tamanho === size ? "bg-primary text-white border-primary" : "bg-white border-border text-primary"}`}>{size}</button>)}<span className="text-xs text-muted-foreground">{filtered.length} {filtered.length === 1 ? "produto" : "produtos"}</span></div>
+            <label className="flex items-center gap-2 text-xs text-muted-foreground">Ordenar por<select value={ordem ?? "relevancia"} onChange={(event) => navigate({ search: (prev) => ({ ...prev, ordem: event.target.value as "relevancia" | "recentes" | "menor" | "maior" }) })} className="bg-white border border-border rounded-full px-3 py-2 text-primary outline-none"><option value="relevancia">Relevância</option><option value="recentes">Mais recentes</option><option value="menor">Menor preço</option><option value="maior">Maior preço</option></select></label>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 sm:gap-x-8 gap-y-12">
+            {filtered.slice(0, visible).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
+          {visible < filtered.length && <div className="text-center mt-12"><button onClick={() => setVisible((value) => value + 8)} className="bg-primary text-white px-8 py-3 rounded-full text-xs font-bold uppercase tracking-wider">Ver mais produtos</button></div>}
 
           {filtered.length === 0 && (
             <p className="text-center text-muted-foreground py-20">

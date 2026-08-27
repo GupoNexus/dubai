@@ -5,7 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { useCart } from "@/context/CartContext";
 import { formatCurrency } from "@/lib/utils";
-import { SHIPPING_FEE, FREE_SHIPPING_FROM } from "@/lib/checkout";
+import { MERCADO_PAGO_INTEGRATED, SHIPPING_INTEGRATED } from "@/lib/checkout";
 import { brandConfig } from "@/data/brandConfig";
 
 export const Route = createFileRoute("/checkout")({
@@ -24,17 +24,18 @@ export const Route = createFileRoute("/checkout")({
 
 function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
-  const shipping = subtotal >= FREE_SHIPPING_FROM || subtotal === 0 ? 0 : SHIPPING_FEE;
-  const total = subtotal + shipping;
+  const total = subtotal;
   const [store, setStore] = useState(brandConfig.stores[0]);
+  const [customer, setCustomer] = useState({ name: "", phone: "", cep: "", address: "", number: "", city: "", state: "" });
 
   const orderLines = items
     .map((i) => `• ${i.quantity}x ${i.name} — ${formatCurrency(i.price * i.quantity)}`)
     .join("\n");
   const message =
     `Olá! Quero finalizar meu pedido na Dubai Enxovais:\n\n${orderLines}\n\n` +
-    `Frete: ${shipping === 0 ? "Grátis" : formatCurrency(shipping)}\n` +
-    `Total: ${formatCurrency(total)}`;
+    `Cliente: ${customer.name || "A informar"}\nTelefone: ${customer.phone || "A informar"}\n` +
+    `Endereço: ${customer.address || "A informar"}, ${customer.number || "s/n"} — ${customer.city || ""}/${customer.state || ""} — CEP ${customer.cep || "A informar"}\n` +
+    `Subtotal: ${formatCurrency(total)}\nFrete: a calcular`;
   const whatsappHref = `https://wa.me/${store?.whatsapp || ""}?text=${encodeURIComponent(message)}`;
 
   return (
@@ -72,18 +73,31 @@ function CheckoutPage() {
               <div className="border-t border-border pt-3 flex justify-between text-sm">
                 <span className="text-muted-foreground">Frete</span>
                 <span className="font-semibold">
-                  {shipping === 0 ? "Grátis" : formatCurrency(shipping)}
+                  A calcular
                 </span>
               </div>
               <div className="border-t border-border pt-3 flex justify-between">
-                <span className="font-bold text-primary">Total</span>
+                <span className="font-bold text-primary">Subtotal</span>
                 <span className="font-bold text-primary text-lg">{formatCurrency(total)}</span>
               </div>
             </div>
 
             <div className="bg-white rounded-2xl p-6 border border-border/60 space-y-4">
+              <h2 className="font-bold text-primary uppercase text-xs tracking-widest">1. Identificação e entrega</h2>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {[{ key: "name", label: "Nome completo" }, { key: "phone", label: "Telefone" }, { key: "cep", label: "CEP" }, { key: "address", label: "Endereço" }, { key: "number", label: "Número" }, { key: "city", label: "Cidade" }, { key: "state", label: "Estado" }].map((field) => <label key={field.key} className={field.key === "address" ? "sm:col-span-2 text-xs text-muted-foreground" : "text-xs text-muted-foreground"}>{field.label}<input value={customer[field.key as keyof typeof customer]} onChange={(event) => setCustomer((value) => ({ ...value, [field.key]: event.target.value }))} className="mt-1 w-full rounded-xl border border-border px-3 py-2.5 text-sm text-foreground outline-none focus:border-primary" /></label>)}
+              </div>
+              {!SHIPPING_INTEGRATED && <p className="text-xs text-muted-foreground bg-secondary/40 rounded-xl p-3">A cotação pelo Melhor Envio será ativada após a conexão das credenciais. Até lá, valor e prazo são confirmados pela equipe.</p>}
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 border border-border/60 space-y-4">
+              <h2 className="font-bold text-primary uppercase text-xs tracking-widest">2. Pagamento</h2>
+              {!MERCADO_PAGO_INTEGRATED && <div className="rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4"><p className="text-sm font-semibold text-primary">Mercado Pago preparado para conexão</p><p className="text-xs text-muted-foreground mt-1">PIX e cartão serão habilitados quando as credenciais da conta Dubai forem conectadas.</p></div>}
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 border border-border/60 space-y-4">
               <h2 className="font-bold text-primary uppercase text-xs tracking-widest">
-                Escolha a loja para atendimento
+                3. Escolha a loja para atendimento
               </h2>
               <div className="grid sm:grid-cols-2 gap-3">
                 {brandConfig.stores.map((s) => (

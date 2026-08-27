@@ -4,7 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { useCart } from "@/context/CartContext";
 import { formatCurrency } from "@/lib/utils";
-import { SHIPPING_FEE, FREE_SHIPPING_FROM } from "@/lib/checkout";
+import { brandConfig } from "@/data/brandConfig";
 
 export const Route = createFileRoute("/carrinho")({
   head: () => ({
@@ -29,7 +29,8 @@ export const Route = createFileRoute("/carrinho")({
 
 function CartPage() {
   const { items, subtotal, updateQuantity, removeItem } = useCart();
-  const shipping = subtotal >= FREE_SHIPPING_FROM || subtotal === 0 ? 0 : SHIPPING_FEE;
+  const whatsappMessage = `Olá! Quero continuar este pedido pelo WhatsApp:\n\n${items.map((item) => `• ${item.quantity}x ${item.name} — ${formatCurrency(item.price * item.quantity)}`).join("\n")}\n\nSubtotal: ${formatCurrency(subtotal)}`;
+  const whatsappHref = `https://wa.me/${brandConfig.stores[0].whatsapp}?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -112,17 +113,17 @@ function CartPage() {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Frete</span>
                 <span className="font-semibold">
-                  {shipping === 0 ? "Grátis" : formatCurrency(shipping)}
+                  A calcular
                 </span>
               </div>
               <div className="border-t border-border pt-4 flex justify-between">
                 <span className="font-bold text-primary">Total</span>
                 <span className="font-bold text-primary text-lg">
-                  {formatCurrency(subtotal + shipping)}
+                  {formatCurrency(subtotal)} + frete
                 </span>
               </div>
               <p className="text-[10px] text-muted-foreground">
-                Em até 10x de {formatCurrency((subtotal + shipping) / 10)} sem juros
+                Condições de pagamento confirmadas na finalização.
               </p>
               <Link
                 to="/checkout"
@@ -130,6 +131,7 @@ function CartPage() {
               >
                 Finalizar compra
               </Link>
+              <a href={whatsappHref} target="_blank" rel="noreferrer" className="block text-center border border-primary text-primary py-3 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-primary hover:text-white transition-colors">Continuar pelo WhatsApp</a>
             </aside>
           </div>
         )}
