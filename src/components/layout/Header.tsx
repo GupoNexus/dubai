@@ -32,7 +32,11 @@ export function Header() {
 
       {/* Main Header */}
       <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-3">
-        <Link to="/" className="flex-shrink-0">
+        <Link
+          to="/"
+          className="flex-shrink-0"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
           <img
             src="/brand/logo.jpg"
             alt={brandConfig.name}
