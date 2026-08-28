@@ -206,6 +206,34 @@ export const PRODUCTS: Product[] = [
     images: gallery("aromas", 2),
     image: gallery("aromas", 2)[0],
   },
+  {
+    id: 14,
+    slug: "jg-cama-amanhecer",
+    name: "Jg Cama Amanhecer",
+    category: "Cama",
+    subcategory: "Jogos de Cama",
+    description: "Jg Cama Amanhecer = 150 Fios 100% Algodão",
+    // PREÇO PROVISÓRIO — ainda não informado pelo cliente, substituir assim que possível.
+    price: 299.9,
+    oldPrice: 379.9,
+    rating: 5,
+    images: gallery("jg-cama-amanhecer", 2),
+    image: gallery("jg-cama-amanhecer", 2)[0],
+  },
+  {
+    id: 15,
+    slug: "jg-cama-ramos",
+    name: "Jg Cama Ramos",
+    category: "Cama",
+    subcategory: "Jogos de Cama",
+    description: "Jg Cama Ramos = 150 Fios 100% Algodão",
+    // PREÇO PROVISÓRIO — ainda não informado pelo cliente, substituir assim que possível.
+    price: 299.9,
+    oldPrice: 379.9,
+    rating: 5,
+    images: gallery("jg-cama-ramos", 3),
+    image: gallery("jg-cama-ramos", 3)[0],
+  },
 ];
 
 export const PRODUCT_CATEGORIES: ProductCategory[] = [
